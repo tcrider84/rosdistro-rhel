@@ -1,0 +1,76 @@
+Can be built on vanilla centos 9:
+--------
+common-lisp-controller (needed for sbcl)
+cl-asdf (needed for sbcl)
+sbcl
+python-mock
+ois (needed for ogre)
+--------
+
+Needs epel dependencies to build:
+--------
+ogre
+python-qt5
+python-nose
+--------
+
+sbcl:
+--------
+Dependencies:
+
+ cl-asdf
+ common-lisp-controller
+
+Build Dependencies:
+
+ common-lisp-controller
+--------
+
+ogre
+--------
+EPEL Dependencies:
+
+ freeimage
+ glew-devel
+ jxrlib
+ libGLEW
+
+Build Dependencies:
+
+  ois-devel(ois)
+
+EPEL Build Dependencies:
+
+ freeimage-devel
+ glew-devel
+ tinyxml-devel
+ freeimage
+ jxrlib
+ libGLEW
+ tinyxml
+--------
+
+python-nose
+--------
+EPEL Dependencies:
+
+ python3-coverage.aarch64
+
+EPEL Build Dependencies:
+
+ python3-coverage
+--------
+
+python-qt5
+--------
+EPEL Dependencies:
+
+ qt5-qtwebkit
+
+EPEL Build Dependencies:
+
+ PyQt-builder 
+ qt5-qtwebkit-devel
+ qt5-qtwebkit
+--------
+
