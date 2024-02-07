@@ -6244,6 +6244,7 @@ python3-glpk-pip: *migrate_eol_2025_04_30_python3_glpk_pip
 python3-gnupg:
   debian: [python3-gnupg]
   fedora: [python3-gnupg]
+  rhel: [python3-gnupg]
   gentoo: [dev-python/python-gnupg]
   nixos: [python3Packages.python-gnupg]
   openembedded: [python3-gnupg@meta-python]
@@ -7313,6 +7314,7 @@ python3-opencv:
 python3-opengl:
   debian: [python3-opengl]
   fedora: [python3-pyopengl]
+  rhel: [python3-pyopengl]
   gentoo: [dev-python/pyopengl]
   nixos: [python3Packages.pyopengl]
   opensuse: [python3-opengl]
@@ -8310,6 +8312,7 @@ python3-qt5-bindings:
 python3-qt5-bindings-gl:
   debian: [python3-pyqt5.qtopengl]
   fedora: [python3-qt5]
+  rhel: [python3-qt5]
   gentoo: ['dev-python/PyQt5[opengl]']
   nixos: [python3Packages.pyqt5]
   openembedded: [python3-pyqt5@meta-qt5]
@@ -8318,6 +8321,7 @@ python3-qt5-bindings-gl:
 python3-qt5-bindings-webkit:
   debian: [python3-pyqt5.qtwebkit]
   fedora: [python3-qt5-webkit]
+  rhel: [python3-qt5-webkit]
   gentoo: ['dev-python/PyQt5[webkit]']
   nixos: [python3Packages.pyqt5_with_qtwebkit]
   openembedded: [python3-pyqt5@meta-qt5]

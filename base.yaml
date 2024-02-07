@@ -4372,6 +4372,7 @@ libogre:
     stretch: [libogre-1.9.0v5]
     wheezy: [libogre-dev]
   fedora: [ogre-devel]
+  rhel: [ogre-devel]
   freebsd: [ogre3d]
   gentoo: [dev-games/ogre]
   macports: [ogre]
@@ -6433,6 +6434,7 @@ lm-sensors:
   arch: [lm_sensors]
   debian: [lm-sensors]
   fedora: [lm_sensors]
+  rhel: [lm_sensors]
   gentoo: [sys-apps/lm_sensors]
   nixos: [lm_sensors]
   openembedded: [lmsensors@meta-oe]
@@ -7587,9 +7589,7 @@ sbcl:
   macports: [sbcl]
   nixos: [sbcl]
   opensuse: [sbcl]
-  rhel:
-    '*': null
-    '7': [sbcl]
+  rhel: [sbcl]
   slackware: [sbcl]
   ubuntu: [sbcl]
 scons:
