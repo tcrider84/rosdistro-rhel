@@ -4400,6 +4400,7 @@ libogre-dev:
   nixos: [ogre1_9]
   openembedded: [ogre@meta-ros-common]
   opensuse: [libOgreMain-devel, libOgreOverlay-devel, libOgrePaging-devel, libOgreProperty-devel, libOgreRTShaderSystem-devel, libOgreTerrain-devel, libOgreVolume-devel]
+  rhel: [ogre-devel]
   slackware: [ogre]
   ubuntu: [libogre-1.9-dev]
 libogre1.12.10:
