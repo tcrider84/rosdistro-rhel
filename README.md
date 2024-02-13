@@ -12,11 +12,12 @@ $ sudo dnf install epel-release epel-next-release
 
 $ sudo dnf install -y gcc-c++ python3-rosdep python3-rosinstall_generator python3-vcstool python3-pyopengl python3-gnupg
 
-$ sudo wget https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/sources.list.d/20-default.list -O /etc/ros/rosdep/sources.list.d/20-default.list
-$ sudo sed -i 's|yaml https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/base.yaml|#yaml https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/base.yaml|g' /etc/ros/rosdep/sources.list.d/20-default.list
-$ sudo sed -i 's|yaml https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/python.yaml|#yaml https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/python.yaml|g' /etc/ros/rosdep/sources.list.d/20-default.list
-$ sudo echo 'yaml https://raw.githubusercontent.com/tcrider84/rosdistro-rhel/main/base.yaml' >> /etc/ros/rosdep/sources.list.d/20-default.list
-$ sudo echo 'yaml https://raw.githubusercontent.com/tcrider84/rosdistro-rhel/main/python.yaml' >> /etc/ros/rosdep/sources.list.d/20-default.list
+$ wget https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/sources.list.d/20-default.list
+$ sed -i 's|yaml https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/base.yaml|#yaml https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/base.yaml|g' 20-default.list
+$ sed -i 's|yaml https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/python.yaml|#yaml https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/python.yaml|g' 20-default.list
+$ echo 'yaml https://raw.githubusercontent.com/tcrider84/rosdistro-rhel/main/base.yaml' >> 20-default.list
+$ echo 'yaml https://raw.githubusercontent.com/tcrider84/rosdistro-rhel/main/python.yaml' >> 20-default.list
+$ sudo mv 20-default.list /etc/ros/rosdep/sources.list.d/
 
 $ export ROS_OS_OVERRIDE=rhel
 $ sudo rosdep init
