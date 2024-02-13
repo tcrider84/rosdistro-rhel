@@ -1,76 +1,84 @@
-Can be built on vanilla centos 9:
---------
-common-lisp-controller (needed for sbcl)
-cl-asdf (needed for sbcl)
-sbcl
-python-mock
-ois (needed for ogre)
---------
+List is also organized into correct build order to satisfy build dependencies.
 
-Needs epel dependencies to build:
---------
+PORTED FROM EPEL:
+-----------------------
+python-vcstool
+python-gnupg
+python-catkin-sphinx
+python-catkin_pkg
+
+python-rospkg
+
+python-rosdistro -- needs option added to bypass failure of test against localhost: `-k 'not test_get_index_from_http_with_query_parameters' \`
+
+python-rosdep
+python-rosinstall_generator
+
+SDL2_ttf
+gtest
+gflags
+highway
+dav1d
+yasm
+portmidi
+libmikmod
+opusfile
+libmodplug
+jack-audio-connection-kit
+libinstpatch
+
+fluidsynth
+
+SDL2_mixer
+
+kf5
+
+extra-cmake-modules
+
+jpegxl -- needs `#include <cmath>` patched into libjxl-0.7.0/lib/jxl/fast_dct-inl.h
+---
+/builddir/build/BUILD/libjxl-0.7.0/lib/jxl/fast_dct-inl.h: In function 'void jxl::N_NEON::{anonymous}::TestFastIDCT()':
+/builddir/build/BUILD/libjxl-0.7.0/lib/jxl/fast_dct-inl.h:176:21: error: 'round' is not a member of 'std'
+  176 |     dct_i[i] = std::round(dct[i] * scale);
+      |                     ^~~~~
+---
+
+aom
+
+libavif -- need to explicitly disable/remove rav1e support, otherwise it tries to pull in rust-rav1e which requires a gazillion rust dependencies
+
+SDL2_image
+
+pygame
+
+gnu-free-fonts
+
+python-pyopengl
+
+jxrlib
+
+glew
+tinyxml
+
+freeimage -- needs LibRaw-epel specifically from epel-next. Will not compile with standard epel version
+-----------------------
+
+PORTED FROM EPEL-NEXT:
+-----------------------
+LibRaw-epel
+-----------------------
+
+PORTED FROM FEDORA:
+-----------------------
+ois
+
 ogre
-python-qt5
-python-nose
---------
+cl-asdf
 
-sbcl:
---------
-Dependencies:
+common-lisp-controller
 
- cl-asdf
- common-lisp-controller
+sbcl -- needs to be built with `--with bootstrap`
 
-Build Dependencies:
+-----------------------
 
- common-lisp-controller
---------
-
-ogre
---------
-EPEL Dependencies:
-
- freeimage
- glew-devel
- jxrlib
- libGLEW
-
-Build Dependencies:
-
-  ois-devel(ois)
-
-EPEL Build Dependencies:
-
- freeimage-devel
- glew-devel
- tinyxml-devel
- freeimage
- jxrlib
- libGLEW
- tinyxml
---------
-
-python-nose
---------
-EPEL Dependencies:
-
- python3-coverage.aarch64
-
-EPEL Build Dependencies:
-
- python3-coverage
---------
-
-python-qt5
---------
-EPEL Dependencies:
-
- qt5-qtwebkit
-
-EPEL Build Dependencies:
-
- PyQt-builder 
- qt5-qtwebkit-devel
- qt5-qtwebkit
---------
 
