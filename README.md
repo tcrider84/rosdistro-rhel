@@ -32,7 +32,7 @@ $ mkdir ./src
 $ vcs import --input noetic-desktop.rosinstall ./src
 
 $ sudo wget https://copr.fedorainfracloud.org/coprs/tcrider/autosd-ros1/repo/centos-stream+epel-next-9/tcrider-autosd-ros1-centos-stream+epel-next-9.repo -O /etc/yum.repos.d/copr-autosd-ros1.repo
-$ sudo dnf config-manager --save --setopt="copr*autosd*ros1*.priority=100"
+$ sudo dnf config-manager --save --setopt="copr*autosd*ros1*.priority=50"
 
 $ sudo dnf install -y sbcl ogre-devel python3-qt5 python3-qt5-webkit log4cxx-devel python3-mock python3-nose --refresh
 
