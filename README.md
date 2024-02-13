@@ -5,7 +5,7 @@ https://copr.fedorainfracloud.org/coprs/tcrider/autosd-ros1/
 # Steps for automation:
 ( please note this is still a non-product approach as it contains packages from epel and ported from fedora to centos in copr):
 ```
-$ sudo dnf install -y bash bzip2 coreutils cpio diffutils findutils gawk glibc-minimal-langpack grep gzip info patch redhat-rpm-config rpm-build sed shadow-utils tar unzip util-linux which xz glibc-devel lm_sensors
+$ sudo dnf install -y bash bzip2 coreutils cpio diffutils findutils gawk glibc-minimal-langpack grep gzip info patch redhat-rpm-config rpm-build sed shadow-utils tar unzip util-linux which xz glibc-devel lm_sensors yum
 
 $ sudo dnf config-manager --set-enabled crb
 $ sudo dnf install epel-release epel-next-release
