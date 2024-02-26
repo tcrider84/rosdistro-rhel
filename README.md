@@ -38,6 +38,11 @@ $ sudo dnf install -y sbcl ogre-devel python3-qt5 python3-qt5-webkit log4cxx-dev
 
 $ rosdep install --from-paths ./src --ignore-packages-from-source --rosdistro noetic -y
 
+$ cd src/rosconsole
+$ wget https://github.com/ros/rosconsole/pull/58.patch
+$ patch -Np1 < 58.patch
+$ cd ../../
+
 $ sed -i 's|Boost REQUIRED python|Boost REQUIRED python3.9|g' ~/ros_catkin_ws/src/vision_opencv/cv_bridge/CMakeLists.txt
 
 $ ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release
@@ -91,10 +96,13 @@ No match for argument: python3-mock
 No match for argument: python3-nose
 ```
 
-4. The log4cxx version cannot be the latest version shipped. The latest version is missing functions that were either removed or changed from the version ROS wants. The most recent version we can use without breaking compilation is 0.11.0:
+4. rosconsole needs a pending upstream patch in order to work with log4cxx versions newer than 0.11 :
 
     Bug noted here:  
     https://github.com/ros/rosconsole/issues/50  
+    
+    Fix:__
+    https://github.com/ros/rosconsole/pull/58  
 
 5. Even though centos ships python3-qt5, there are two bugs with it with ROS which require us to rebuild.
 
