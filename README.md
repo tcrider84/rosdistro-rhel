@@ -44,6 +44,7 @@ $ patch -Np1 < 58.patch
 $ cd ../../
 
 $ sed -i 's|Boost REQUIRED python|Boost REQUIRED python3.9|g' ~/ros_catkin_ws/src/vision_opencv/cv_bridge/CMakeLists.txt
+$ sudo sed -i 's|use_limited_api=True, py_ssize_t_clean=True|use_limited_api=True|g' /usr/lib64/python3.9/site-packages/PyQt5/bindings/QtCore/QtCoremod.sip
 
 $ ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release
 ```
@@ -140,12 +141,14 @@ https://github.com/ros-noetic-arch/ros-noetic-python-qt-binding/issues/7
 Arch Linux used to provide a patch to re-enable SIP support:  
 https://github.com/archlinux/svntogit-packages/commit/9f73b4aabafa235823c529e3a37799ce678b776d#diff-442c918e6d9646aa3a16151aeba4ba9fe85d88e54e8e952da466e89ca11ba8b7
 
-So I've rebased and added the patch to the python-qt5 build in COPR. This is also why we give the COPR repo higher priority:
+As a temporary workaround a 1 line change is needed on our python-qt5 side:  
 
+`$ sudo sed -i 's|use_limited_api=True, py_ssize_t_clean=True|use_limited_api=True|g' /usr/lib64/python3.9/site-packages/PyQt5/bindings/QtCore/QtCoremod.sip`  
+
+Since we are recompiling the python-qt5 package anyway for webkit support, we need to give our repo higher priority so it knows to install python-qt5 from our repo instead of the default autosd repo:  
 ```
 $ sudo dnf config-manager --save --setopt="copr*autosd*ros1*.priority=100"
 ```
-Because we override the python3-qt5 packages from centos, giving the repo higher priority ensures they won't be overridden again when a package update from centos occurs.
 
 6. CMake in ROS does not correctly detect Boost python in centos, we have to modify it:
 ```
@@ -161,8 +164,3 @@ CMake Error at /usr/share/cmake/Modules/FindPackageHandleStandardArgs.cmake:230 
 
 And that's it!
 
-
-TODO:
-
-- Reproduce once more on a clean build to verify in case anything is missing
-- Create a list of packages coming from epel.
