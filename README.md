@@ -44,7 +44,6 @@ $ patch -Np1 < 58.patch
 $ cd ../../
 
 $ sed -i 's|Boost REQUIRED python|Boost REQUIRED python3.9|g' ~/ros_catkin_ws/src/vision_opencv/cv_bridge/CMakeLists.txt
-$ sudo sed -i 's|use_limited_api=True, py_ssize_t_clean=True|use_limited_api=True|g' /usr/lib64/python3.9/site-packages/PyQt5/bindings/QtCore/QtCoremod.sip
 
 $ ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release
 ```
@@ -124,28 +123,43 @@ https://src.fedoraproject.org/rpms/python-qt5/blob/rawhide/f/python-qt5.spec#_15
 %endif
 ```
 
-So we have to remove the if/endif check in the spec sheet for enabling webkit.
+So we have to remove the if/endif check in the spec sheet for enabling webkit.  
 
-The second is that ROS requires SIP 4 support in python:
+The second is that python-qt5's ros module for qt gui requires py_ssize_t_clean:  
 
-Original error(s) reported:
+Original error(s) reported:  
 ```
-Running SIP generator for qt_gui_cpp_sip Python bindings...
+[ 84%] Built target qt_gui_cpp
+[ 89%] Running SIP generator for qt_gui_cpp_sip Python bindings...
 sip: Deprecation warning: qt_gui_cpp.sip:1: %Module version number should be specified using the 'version' argument
 sip: /usr/lib64/python3.9/site-packages/PyQt5/bindings/QtCore/QtCoremod.sip:23: syntax error
+Traceback (most recent call last):
+  File "/home/tcrider/ros_catkin_ws/install_isolated/share/python_qt_binding/cmake/sip_configure.py", line 122, in <module>
+    subprocess.check_call(cmd)
+  File "/usr/lib64/python3.9/subprocess.py", line 373, in check_call
+    raise CalledProcessError(retcode, cmd)
+subprocess.CalledProcessError: Command '['/usr/bin/sip', '-c', '/home/tcrider/ros_catkin_ws/build_isolated/qt_gui_cpp/sip/qt_gui_cpp_sip', '-b', '/home/tcrider/ros_catkin_ws/build_isolated/qt_gui_cpp/sip/qt_gui_cpp_sip/pyqtscripting.sbf', '-I', '/usr/lib64/python3.9/site-packages/PyQt5/bindings', '-w', '-n', 'PyQt5.sip', '-t', 'Qt_5_15_0', '-t', 'WS_X11', 'qt_gui_cpp.sip']' returned non-zero exit status 1.
+make[2]: *** [src/qt_gui_cpp_sip/CMakeFiles/libqt_gui_cpp_sip.dir/build.make:103: sip/qt_gui_cpp_sip/Makefile] Error 1
+make[1]: *** [CMakeFiles/Makefile2:337: src/qt_gui_cpp_sip/CMakeFiles/libqt_gui_cpp_sip.dir/all] Error 2
 ```
 
+The bug is noted here:  
+
 Bug noted here:  
-https://github.com/ros-noetic-arch/ros-noetic-python-qt-binding/issues/7
+https://github.com/ros-noetic-arch/ros-noetic-python-qt-binding/issues/7  
 
 Arch Linux used to provide a patch to re-enable SIP support:  
-https://github.com/archlinux/svntogit-packages/commit/9f73b4aabafa235823c529e3a37799ce678b776d#diff-442c918e6d9646aa3a16151aeba4ba9fe85d88e54e8e952da466e89ca11ba8b7
+https://github.com/archlinux/svntogit-packages/commit/9f73b4aabafa235823c529e3a37799ce678b776d#diff-442c918e6d9646aa3a16151aeba4ba9fe85d88e54e8e952da466e89ca11ba8b7  
 
-As a temporary workaround a 1 line change is needed on our python-qt5 side:  
+However this is going backwards. Instead of doing that the proper fix is to backport upstream sip changes that include py_ssize_t_clean when calling the module.  
 
-`$ sudo sed -i 's|use_limited_api=True, py_ssize_t_clean=True|use_limited_api=True|g' /usr/lib64/python3.9/site-packages/PyQt5/bindings/QtCore/QtCoremod.sip`  
+Someone else has also already done that with the following patch:  
 
-Since we are recompiling the python-qt5 package anyway for webkit support, we need to give our repo higher priority so it knows to install python-qt5 from our repo instead of the default autosd repo:  
+https://raw.githubusercontent.com/robwoolley/meta-openembedded/ad1494b75f6ece452bdaec88c32772a32cd9186b/meta-oe/recipes-devtools/sip/sip3/added-the-py_ssize_t_clean-argument-to-the-module-directive.patch  
+
+I've rebased the patch and rebuilt sip with it in our copr repo.  
+
+Since we are recompiling both sip and python-qt5, we need to give our repo higher priority so it knows to install sip and python-qt5 from our repo instead of the default autosd repo:  
 ```
 $ sudo dnf config-manager --save --setopt="copr*autosd*ros1*.priority=100"
 ```
