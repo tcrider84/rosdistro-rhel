@@ -1,0 +1,223 @@
+From ef11ddaed3b425946d37fde853ea9ed0fed26592 Mon Sep 17 00:00:00 2001
+From: Tom Crider <tcrider@redhat.com>
+Date: Wed, 27 Mar 2024 18:56:36 +0000
+Subject: [PATCH] convert from python-nose to python-pytest
+
+---
+ genpy/test/test_genpy_message.py                   |  4 ++--
+ resource_retriever/test/test.py                    | 14 +++++++-------
+ ros_comm/rosgraph/test/test_roslogging.py          |  3 +--
+ .../rosgraph/test/test_roslogging_user_logger.py   |  4 ++--
+ ros_comm/rosmsg/test/test_rosmsgproto.py           | 14 +++++++-------
+ .../rosmsg/test/test_rosmsgproto_command_line.py   |  4 ++--
+ vision_opencv/cv_bridge/test/python_bindings.py    | 10 +++++-----
+ 7 files changed, 26 insertions(+), 27 deletions(-)
+
+diff --git a/genpy/test/test_genpy_message.py b/genpy/test/test_genpy_message.py
+index e890229..8944b94 100644
+--- a/genpy/test/test_genpy_message.py
++++ b/genpy/test/test_genpy_message.py
+@@ -40,7 +40,7 @@ import genpy.message
+ from genpy import Duration
+ from genpy import Time
+ 
+-from nose.tools import nottest
++import pytest
+ 
+ import yaml
+ 
+@@ -57,7 +57,7 @@ class MessageTest(unittest.TestCase):
+         x = HeaderTest()
+         x._check_types()
+ 
+-    @nottest
++    @pytest.mark.skip(reason="Test is not relevant or known to fail")
+     def test_Message_check_types(self):
+         # this test is disabled since genpy does not depend on std_msgs and can therefore not use it in the test
+ 
+diff --git a/resource_retriever/test/test.py b/resource_retriever/test/test.py
+index 54f20aa..0de0d49 100644
+--- a/resource_retriever/test/test.py
++++ b/resource_retriever/test/test.py
+@@ -2,7 +2,7 @@ import resource_retriever as r
+ 
+ import os
+ import rospkg
+-from nose.tools import raises
++import pytest
+ 
+ rospack = rospkg.RosPack()
+ 
+@@ -23,14 +23,14 @@ def test_http():
+     res = r.get("http://packages.ros.org/ros.key")
+     assert len(res) > 0
+ 
+-@raises(Exception)
+ def test_invalid_file():
+-    r.get("file://fail")
++    with pytest.raises(Exception):
++        r.get("file://fail")
+ 
+-@raises(Exception)
+ def test_no_file():
+-    r.get("package://roscpp")
++    with pytest.raises(Exception):
++        r.get("package://roscpp")
+ 
+-@raises(rospkg.common.ResourceNotFound)
+ def test_invalid_package():
+-    r.get("package://invalid_package_blah/test.xml")
++    with pytest.raises(rospkg.common.ResourceNotFound):
++        r.get("package://invalid_package_blah/test.xml")
+diff --git a/ros_comm/rosgraph/test/test_roslogging.py b/ros_comm/rosgraph/test/test_roslogging.py
+index 67fbd75..02ca38c 100644
+--- a/ros_comm/rosgraph/test/test_roslogging.py
++++ b/ros_comm/rosgraph/test/test_roslogging.py
+@@ -39,7 +39,6 @@ except ImportError:
+ import sys
+ 
+ import re
+-from nose.tools import assert_regexp_matches
+ import rosgraph.roslogging
+ 
+ 
+@@ -124,7 +123,7 @@ try:
+                 r'[0-9]*\.[0-9]*',
+                 r'[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}',
+             ])
+-            assert_regexp_matches(lout.getvalue().splitlines()[i], log_out)
++            re.search(lout.getvalue().splitlines()[i], log_out)
+ 
+ finally:
+ 
+diff --git a/ros_comm/rosgraph/test/test_roslogging_user_logger.py b/ros_comm/rosgraph/test/test_roslogging_user_logger.py
+index ab2981b..6da220c 100644
+--- a/ros_comm/rosgraph/test/test_roslogging_user_logger.py
++++ b/ros_comm/rosgraph/test/test_roslogging_user_logger.py
+@@ -44,7 +44,7 @@ except ImportError:
+     from io import StringIO
+ import sys
+ 
+-from nose.tools import assert_regexp_matches
++import re
+ 
+ import rosgraph.roslogging
+ 
+@@ -141,7 +141,7 @@ def test_roslogging_user_logger():
+             r'[0-9]*\.[0-9]*',
+             r'[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}',
+         ])
+-        assert_regexp_matches(lout.getvalue().strip(), log_expected)
++        re.search(lout.getvalue().strip(), log_expected)
+ 
+     finally:
+         # restoring default ros handler
+diff --git a/ros_comm/rosmsg/test/test_rosmsgproto.py b/ros_comm/rosmsg/test/test_rosmsgproto.py
+index 56d9559..8cb7f6d 100644
+--- a/ros_comm/rosmsg/test/test_rosmsgproto.py
++++ b/ros_comm/rosmsg/test/test_rosmsgproto.py
+@@ -47,7 +47,7 @@ import rostest
+ import rosmsg
+ from rosmsg import *
+ 
+-from nose.plugins.skip import SkipTest
++import pytest
+ 
+ _NO_DICT=True
+ if "OrderedDict" in collections.__dict__:
+@@ -81,7 +81,7 @@ class RosMsgProtoTest(unittest.TestCase):
+ 
+         
+     def test_rosmsg_cmd_prototype_std_msgs_Int16(self):
+-        if _NO_DICT: raise SkipTest("Test skipped because Python version too low")
++        if _NO_DICT: raise pytest.skip("Test skipped because Python version too low")
+         self.assertEqual('"data: 0"', rosmsg_cmd_prototype(["msg", "std_msgs/Int16"]))
+         self.assertEqual('data: 0', rosmsg_cmd_prototype(["msg", "std_msgs/Int16", "-H"]))
+         self.assertEqual('"  data: 0"', rosmsg_cmd_prototype(["msg", "std_msgs/Int16", "-p", "  "]))
+@@ -89,27 +89,27 @@ class RosMsgProtoTest(unittest.TestCase):
+         self.assertEqual('"{}"', rosmsg_cmd_prototype(["msg", "std_msgs/Int16","-x", "data"]))
+ 
+     def test_rosmsg_cmd_prototype_std_msgs_String(self):
+-        if _NO_DICT: raise SkipTest("Test skipped because Python version too low")
++        if _NO_DICT: raise pytest.skip("Test skipped because Python version too low")
+         self.assertEqual('"data: \'\'"', rosmsg_cmd_prototype(["msg", "std_msgs/String"]))
+         self.assertEqual('data: \'\'', rosmsg_cmd_prototype(["msg", "std_msgs/String", "-H"]))
+         self.assertEqual('  data: \'\'', rosmsg_cmd_prototype(["msg", "std_msgs/String", "-p", "  ", "-H"]))
+ 
+     def test_rosmsg_cmd_prototype_std_msgs_Header(self):
+-        if _NO_DICT: raise SkipTest("Test skipped because Python version too low")
++        if _NO_DICT: raise pytest.skip("Test skipped because Python version too low")
+         self.assertEqual('"seq: 0\nstamp:\n  secs: 0\n  nsecs: 0\nframe_id: \'\'"', rosmsg_cmd_prototype(["msg", "std_msgs/Header"]))
+         self.assertEqual('"{seq: 0, stamp: {secs: 0, nsecs: 0}, frame_id: \'\'}"', rosmsg_cmd_prototype(["msg", "std_msgs/Header", "-f1"]))
+ 
+     def test_rosmsg_cmd_prototype_std_msgs_Bool(self):
+-        if _NO_DICT: raise SkipTest("Test skipped because Python version too low")
++        if _NO_DICT: raise pytest.skip("Test skipped because Python version too low")
+         self.assertEqual('"data: false"', rosmsg_cmd_prototype(["msg", "std_msgs/Bool"]))
+ 
+     def test_rosmsg_cmd_prototype_std_msgs_Time(self):
+-        if _NO_DICT: raise SkipTest("Test skipped because Python version too low")
++        if _NO_DICT: raise pytest.skip("Test skipped because Python version too low")
+         self.assertEqual('"data:\n  secs: 0\n  nsecs: 0"', rosmsg_cmd_prototype(["msg", "std_msgs/Time"]))
+         self.assertEqual('"{data: {secs: 0, nsecs: 0}}"', rosmsg_cmd_prototype(["msg", "std_msgs/Time", "-f1"]))
+ 
+     def test_rosmsg_cmd_prototype_std_msgs_Duration(self):
+-        if _NO_DICT: raise SkipTest("Test skipped because Python version too low")
++        if _NO_DICT: raise pytest.skip("Test skipped because Python version too low")
+         self.assertEqual('"data:\n  secs: 0\n  nsecs: 0"', rosmsg_cmd_prototype(["msg", "std_msgs/Duration"]))
+         self.assertEqual('"{data: {secs: 0, nsecs: 0}}"', rosmsg_cmd_prototype(["msg", "std_msgs/Duration", "-f1"]))
+ 
+diff --git a/ros_comm/rosmsg/test/test_rosmsgproto_command_line.py b/ros_comm/rosmsg/test/test_rosmsgproto_command_line.py
+index 84d2fd0..e9e6b70 100644
+--- a/ros_comm/rosmsg/test/test_rosmsgproto_command_line.py
++++ b/ros_comm/rosmsg/test/test_rosmsgproto_command_line.py
+@@ -47,7 +47,7 @@ from subprocess import Popen, PIPE, call
+ import collections
+ import rosmsg
+ 
+-from nose.plugins.skip import SkipTest
++import pytest
+ 
+ ROSMSGPROTO_FN = [sys.executable, os.path.join(os.getcwd(), '../scripts/rosmsg-proto')]
+ _NO_DICT = True
+@@ -58,7 +58,7 @@ class RosMsgProtoCommandlineTestMsg(unittest.TestCase):
+ 
+     def setUp(self):
+         # proto depends on python 2.7 having OrderedDict
+-        if _NO_DICT: raise SkipTest("Test skipped because Python version too low")
++        if _NO_DICT: raise pytest.skip("Test skipped because Python version too low")
+         self.new_environ = os.environ
+         self.new_environ["PYTHONPATH"] = os.path.join(os.getcwd(), "src")+os.linesep+os.environ['PYTHONPATH']
+     
+diff --git a/vision_opencv/cv_bridge/test/python_bindings.py b/vision_opencv/cv_bridge/test/python_bindings.py
+index 3d94f4e..df33031 100644
+--- a/vision_opencv/cv_bridge/test/python_bindings.py
++++ b/vision_opencv/cv_bridge/test/python_bindings.py
+@@ -1,4 +1,4 @@
+-from nose.tools import assert_equal
++import python
+ import numpy as np
+ 
+ import cv_bridge
+@@ -21,9 +21,9 @@ def test_cvtColorForDisplay():
+             label[int(min_y):int(max_y), int(min_x):int(max_x)] = label_value
+             label_value += 1
+     label_viz = cv_bridge.cvtColorForDisplay(label, '32SC1', 'bgr8')
+-    assert_equal(label_viz.dtype, np.uint8)
+-    assert_equal(label_viz.min(), 0)
+-    assert_equal(label_viz.max(), 255)
++    assert(label_viz.dtype, np.uint8)
++    assert(label_viz.min(), 0)
++    assert(label_viz.max(), 255)
+ 
+     # Check that mono8 conversion returns the right shape.
+     bridge = cv_bridge.CvBridge()
+@@ -32,4 +32,4 @@ def test_cvtColorForDisplay():
+ 
+     input_msg = bridge.cv2_to_imgmsg(mono, encoding='mono8')
+     output = bridge.imgmsg_to_cv2(input_msg, desired_encoding='mono8')
+-    assert_equal(output.shape, (100,100))
++    assert(output.shape, (100,100))
+-- 
+2.43.0
+

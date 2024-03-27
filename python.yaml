@@ -2479,7 +2479,7 @@ python-nose:
   alpine: [py-nose]
   arch: [python2-nose]
   debian: [python-nose]
-  fedora: [python-nose]
+  fedora: [python3-pytest]
   freebsd: [py27-nose]
   gentoo: [dev-python/nose]
   macports: [py27-nose]
@@ -2492,6 +2492,7 @@ python-nose:
   rhel:
     '7': [python2-nose]
     '8': [python2-nose]
+    '9': [python3-pytest]
   slackware: [nose]
   ubuntu:
     '*': [python-nose]
@@ -7122,7 +7123,7 @@ python3-nmcli-pip:
 python3-nose:
   arch: [python-nose]
   debian: [python3-nose]
-  fedora: [python3-nose]
+  fedora: [python3-pytest]
   gentoo: [dev-python/nose]
   nixos: [python3Packages.nose]
   openembedded: [python3-nose@openembedded-core]
@@ -7130,7 +7131,7 @@ python3-nose:
   osx:
     pip:
       packages: [nose]
-  rhel: ['python%{python3_pkgversion}-nose']
+  rhel: ['python%{python3_pkgversion}-pytest']
   ubuntu: [python3-nose]
 python3-nose-parameterized:
   debian: [python3-nose-parameterized]
