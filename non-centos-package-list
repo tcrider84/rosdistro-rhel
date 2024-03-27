@@ -15,8 +15,6 @@ sbcl -- needs to be built with `--with bootstrap`
 log4cxx
 
 python-nose
-
-python-mock
 -----------------------
 
 REBUILT WITH WEBKIT ENABLED AND SIP4 SUPPORT:

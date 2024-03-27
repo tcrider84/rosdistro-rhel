@@ -5,15 +5,26 @@ https://copr.fedorainfracloud.org/coprs/tcrider/autosd-ros1/
 # Steps for automation:
 ( please note this is still a non-product approach as it contains packages from epel and ported from fedora to centos in copr):
 ```
+
+# Install base dependencies for building ros:
+
 $ sudo dnf install -y bash bzip2 coreutils cpio diffutils findutils gawk glibc-minimal-langpack grep gzip info patch redhat-rpm-config rpm-build sed shadow-utils tar unzip util-linux which xz glibc-devel lm_sensors yum
+
+# Enable EPEL and CRB:
 
 $ sudo dnf config-manager --set-enabled crb
 $ sudo dnf install epel-release epel-next-release
 
+# Install EPEL dependencies for building ros:
+
 $ sudo dnf install -y gcc-c++ python3-rosdep python3-rosinstall_generator python3-vcstool python3-pyopengl python3-gnupg
+
+# Force rhel as ROS_OS_OVERRIDE to allow rosdep init to work:
 
 $ export ROS_OS_OVERRIDE=rhel
 $ sudo rosdep init
+
+# Fix missing ros dependencies:
 
 $ wget https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/sources.list.d/20-default.list
 $ sed -i 's|yaml https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/base.yaml|#yaml https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/base.yaml|g' 20-default.list
@@ -22,29 +33,50 @@ $ echo 'yaml https://raw.githubusercontent.com/tcrider84/rosdistro-rhel/main/bas
 $ echo 'yaml https://raw.githubusercontent.com/tcrider84/rosdistro-rhel/main/python.yaml' >> 20-default.list
 $ sudo mv 20-default.list /etc/ros/rosdep/sources.list.d/
 
-$ rosdep update
-
-$ mkdir ~/ros_catkin_ws
-$ cd ~/ros_catkin_ws
-
-$ rosinstall_generator desktop --rosdistro noetic --deps --tar > noetic-desktop.rosinstall
-$ mkdir ./src
-$ vcs import --input noetic-desktop.rosinstall ./src
+# Add more missing dependencies ported from fedora to copr repo:
 
 $ sudo wget https://copr.fedorainfracloud.org/coprs/tcrider/autosd-ros1/repo/centos-stream+epel-next-9/tcrider-autosd-ros1-centos-stream+epel-next-9.repo -O /etc/yum.repos.d/copr-autosd-ros1.repo
 $ sudo dnf config-manager --save --setopt="copr*autosd*ros1*.priority=50"
 
 $ sudo dnf update python3-qt5 sip --refresh
-$ sudo dnf install -y sbcl ogre-devel python3-qt5-webkit log4cxx-devel python3-mock python3-nose --refresh
+$ sudo dnf install -y sbcl ogre-devel python3-qt5-webkit log4cxx-devel python3-nose --refresh
+
+$ rosdep update
+
+# Create building directory:
+
+$ mkdir ~/ros_catkin_ws
+$ cd ~/ros_catkin_ws
+
+# Prepare ros sources:
+
+$ rosinstall_generator desktop --rosdistro noetic --deps --tar > noetic-desktop.rosinstall
+$ mkdir ./src
+$ vcs import --input noetic-desktop.rosinstall ./src
 
 $ rosdep install --from-paths ./src --ignore-packages-from-source --rosdistro noetic -y
+
+# allow newer versions of log4cxx to work within sources:
 
 $ cd src/rosconsole
 $ wget https://github.com/ros/rosconsole/pull/58.patch
 $ patch -Np1 < 58.patch
 $ cd ../../
 
+# fix python3-boost detection on RHEL within sources:
+
 $ sed -i 's|Boost REQUIRED python|Boost REQUIRED python3.9|g' ~/ros_catkin_ws/src/vision_opencv/cv_bridge/CMakeLists.txt
+
+# fix python3-mock within sources -- python3-mock is deprecated, replaced by unittest: https://fedoraproject.org/wiki/Changes/DeprecatePythonMock#How_to_migrate_to_unittest.mock
+
+$ sed -i 's/import mock/from unittest import mock/g' ./src/ros_comm/rosgraph/test/test_xmlrpc.py
+$ sed -i 's/from mock import /from unittest.mock import /g' ./src/rqt_tf_tree/test/dotcode_tf_test.py
+$ sed -i 's/from mock import /from unittest.mock import /g' ./src/rqt_dep/test/dotcode_pack_test.py
+$ sed -i 's/from mock import /from unittest.mock import /g' ./src/catkin/test/unit_tests/test_environment_cache.py
+$ sed -i 's/from mock import /from unittest.mock import /g' ./src/catkin/test/unit_tests/test_find_in_workspace.py
+$ sed -i 's/from mock import /from unittest.mock import /g' ./src/catkin/test/unit_tests/test_parse_package_xml.py
+
+# build
 
 $ ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release
 ```

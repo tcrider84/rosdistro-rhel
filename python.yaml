@@ -2338,7 +2338,7 @@ python-mock:
   alpine: [py-mock]
   arch: [python2-mock]
   debian: [python-mock]
-  fedora: [python-mock]
+  fedora: [python-pytest]
   freebsd: [py27-mock]
   gentoo: [dev-python/mock]
   nixos: [pythonPackages.mock]
@@ -2350,6 +2350,7 @@ python-mock:
   rhel:
     '7': [python2-mock]
     '8': [python2-mock]
+    '9': [python-pytest]
   slackware: [mock]
   ubuntu:
     bionic: [python-mock]
@@ -6912,7 +6913,7 @@ python3-mock:
   alpine: [py3-mock]
   arch: [python-mock]
   debian: [python3-mock]
-  fedora: [python3-mock]
+  fedora: [python-pytest]
   gentoo: [dev-python/mock]
   nixos: [python3Packages.mock]
   openembedded: [python3-mock@meta-ros-common]
@@ -6920,7 +6921,7 @@ python3-mock:
   osx:
     pip:
       packages: [mock]
-  rhel: ['python%{python3_pkgversion}-mock']
+  rhel: ['python%{python3_pkgversion}-pytest']
   ubuntu: [python3-mock]
 python3-moonraker-api-pip:
   debian:
